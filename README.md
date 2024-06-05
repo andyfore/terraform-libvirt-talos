@@ -1,6 +1,7 @@
 # About
 
-[![Lint](https://github.com/rgl/terraform-libvirt-talos/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/terraform-libvirt-talos/actions/workflows/lint.yml)
+
+<!-- [![Lint](https://github.com/rgl/terraform-libvirt-talos/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/terraform-libvirt-talos/actions/workflows/lint.yml) -->
 
 An example [Talos Linux](https://www.talos.dev) Kubernetes cluster in libvirt QEMU/KVM Virtual Machines using terraform.
 
@@ -10,84 +11,105 @@ An example [Talos Linux](https://www.talos.dev) Kubernetes cluster in libvirt QE
 
 The [spin extension](https://github.com/siderolabs/extensions/tree/main/container-runtime/spin), which installs [containerd-shim-spin](https://github.com/spinkube/containerd-shim-spin), is used to provide the ability to run [Spin Applications](https://developer.fermyon.com/spin/v2/index) ([WebAssembly/Wasm](https://webassembly.org/)).
 
-# Usage (Ubuntu 22.04 host)
+# Workstation setup
 
-Install libvirt:
+The following need to be installed for remote management:
 
-```bash
-# install libvirt et al.
-apt-get install -y virt-manager
-# configure the security_driver to prevent errors alike (when using terraform):
-#   Could not open '/var/lib/libvirt/images/terraform_talos_example_c0.img': Permission denied'
-sed -i -E 's,#?(security_driver)\s*=.*,\1 = "none",g' /etc/libvirt/qemu.conf
-systemctl restart libvirtd
-# let the current user manage libvirtd.
-# see /usr/share/polkit-1/rules.d/60-libvirt.rules
-usermod -aG libvirt $USER
-# restart the shell.
-exit
-```
+- kubectl
+- cilium cli
+- terraform
+- libvirt
+- cilium hubble cli
+- kubectl-linstor plugin
+- talosctl
 
-Install Terraform:
+The following can be installed on MacOS and Linux using homebrew:
 
-```bash
-# see https://github.com/hashicorp/terraform/releases
-# renovate: datasource=github-releases depName=hashicorp/terraform
-terraform_version='1.8.4'
-wget "https://releases.hashicorp.com/terraform/$terraform_version/terraform_${$terraform_version}_linux_amd64.zip"
-unzip "terraform_${$terraform_version}_linux_amd64.zip"
-sudo install terraform /usr/local/bin
-rm terraform terraform_*_linux_amd64.zip
-```
+- brew install kubectl cilium-cli terraform libvirt hubble
 
-Install cilium cli:
+The linstor plugin for kubectl can be easily installed using krew, which itself can be installed with homebrew:
 
-```bash
-# see https://github.com/cilium/cilium-cli/releases
-# renovate: datasource=github-releases depName=cilium/cilium-cli
-cilium_version='0.16.7'
-cilium_url="https://github.com/cilium/cilium-cli/releases/download/v$cilium_version/cilium-linux-amd64.tar.gz"
-wget -O- "$cilium_url" | tar xzf - cilium
-sudo install cilium /usr/local/bin/cilium
-rm cilium
-```
+- brew install krew
+- kubectl krew install linstor
 
-Install cilium hubble:
+<!-- # Usage (Ubuntu 22.04 host) -->
 
-```bash
-# see https://github.com/cilium/hubble/releases
-# renovate: datasource=github-releases depName=cilium/hubble
-hubble_version='0.13.4'
-hubble_url="https://github.com/cilium/hubble/releases/download/v$hubble_version/hubble-linux-amd64.tar.gz"
-wget -O- "$hubble_url" | tar xzf - hubble
-sudo install hubble /usr/local/bin/hubble
-rm hubble
-```
+<!-- Install libvirt: -->
 
-Install kubectl-linstor:
+<!-- ```bash -->
+<!-- # install libvirt et al. -->
+<!-- apt-get install -y virt-manager -->
+<!-- # configure the security_driver to prevent errors alike (when using terraform): -->
+<!-- #   Could not open '/var/lib/libvirt/images/terraform_talos_example_c0.img': Permission denied' -->
+<!-- sed -i -E 's,#?(security_driver)\s*=.*,\1 = "none",g' /etc/libvirt/qemu.conf -->
+<!-- systemctl restart libvirtd -->
+<!-- # let the current user manage libvirtd. -->
+<!-- # see /usr/share/polkit-1/rules.d/60-libvirt.rules -->
+<!-- usermod -aG libvirt $USER -->
+<!-- # restart the shell. -->
+<!-- exit -->
+<!-- ``` -->
 
-```bash
-# NB kubectl linstor storage-pool list is equivalent to:
-#    kubectl -n piraeus-datastore exec deploy/linstor-controller -- linstor storage-pool list
-# see https://github.com/piraeusdatastore/kubectl-linstor/releases
-# renovate: datasource=github-releases depName=piraeusdatastore/kubectl-linstor
-kubectl_linstor_version='0.3.0'
-kubectl_linstor_url="https://github.com/piraeusdatastore/kubectl-linstor/releases/download/v${kubectl_linstor_version}/kubectl-linstor_v${kubectl_linstor_version}_linux_amd64.tar.gz"
-wget -O- "$kubectl_linstor_url" | tar xzf - kubectl-linstor
-sudo install kubectl-linstor /usr/local/bin/kubectl-linstor
-rm kubectl-linstor
-```
+<!-- Install Terraform: -->
 
-Install talosctl:
+<!-- ```bash -->
+<!-- # see https://github.com/hashicorp/terraform/releases -->
+<!-- # renovate: datasource=github-releases depName=hashicorp/terraform -->
+<!-- terraform_version='1.8.4' -->
+<!-- wget "https://releases.hashicorp.com/terraform/$terraform_version/terraform_${$terraform_version}_linux_amd64.zip" -->
+<!-- unzip "terraform_${$terraform_version}_linux_amd64.zip" -->
+<!-- sudo install terraform /usr/local/bin -->
+<!-- rm terraform terraform_*_linux_amd64.zip -->
+<!-- ``` -->
 
-```bash
-# see https://github.com/siderolabs/talos/releases
-# renovate: datasource=github-releases depName=siderolabs/talos
-talos_version='1.7.2'
-wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
-sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
-rm talosctl-linux-amd64
-```
+<!-- Install cilium cli: -->
+
+<!-- ```bash -->
+<!-- # see https://github.com/cilium/cilium-cli/releases -->
+<!-- # renovate: datasource=github-releases depName=cilium/cilium-cli -->
+<!-- cilium_version='0.16.7' -->
+<!-- cilium_url="https://github.com/cilium/cilium-cli/releases/download/v$cilium_version/cilium-linux-amd64.tar.gz" -->
+<!-- wget -O- "$cilium_url" | tar xzf - cilium -->
+<!-- sudo install cilium /usr/local/bin/cilium -->
+<!-- rm cilium -->
+<!-- ``` -->
+
+<!-- Install cilium hubble: -->
+
+<!-- ```bash -->
+<!-- # see https://github.com/cilium/hubble/releases -->
+<!-- # renovate: datasource=github-releases depName=cilium/hubble -->
+<!-- hubble_version='0.13.4' -->
+<!-- hubble_url="https://github.com/cilium/hubble/releases/download/v$hubble_version/hubble-linux-amd64.tar.gz" -->
+<!-- wget -O- "$hubble_url" | tar xzf - hubble -->
+<!-- sudo install hubble /usr/local/bin/hubble -->
+<!-- rm hubble -->
+<!-- ``` -->
+
+<!-- Install kubectl-linstor: -->
+
+<!-- ```bash -->
+<!-- # NB kubectl linstor storage-pool list is equivalent to: -->
+<!-- #    kubectl -n piraeus-datastore exec deploy/linstor-controller -- linstor storage-pool list -->
+<!-- # see https://github.com/piraeusdatastore/kubectl-linstor/releases -->
+<!-- # renovate: datasource=github-releases depName=piraeusdatastore/kubectl-linstor -->
+<!-- kubectl_linstor_version='0.3.0' -->
+<!-- kubectl_linstor_url="https://github.com/piraeusdatastore/kubectl-linstor/releases/download/v${kubectl_linstor_version}/kubectl-linstor_v${kubectl_linstor_version}_linux_amd64.tar.gz" -->
+<!-- wget -O- "$kubectl_linstor_url" | tar xzf - kubectl-linstor -->
+<!-- sudo install kubectl-linstor /usr/local/bin/kubectl-linstor -->
+<!-- rm kubectl-linstor -->
+<!-- ``` -->
+
+<!-- Install talosctl: -->
+
+<!-- ```bash -->
+<!-- # see https://github.com/siderolabs/talos/releases -->
+<!-- # renovate: datasource=github-releases depName=siderolabs/talos -->
+<!-- talos_version='1.7.2' -->
+<!-- wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64 -->
+<!-- sudo install talosctl-linux-amd64 /usr/local/bin/talosctl -->
+<!-- rm talosctl-linux-amd64 -->
+<!-- ``` -->
 
 Install the talos image into libvirt, and initialize terraform:
 
