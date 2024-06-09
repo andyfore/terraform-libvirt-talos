@@ -3,7 +3,7 @@
 variable "talos_version" {
   type = string
   # renovate: datasource=github-releases depName=siderolabs/talos
-  default = "1.7.2"
+  default = "1.7.4"
   validation {
     condition     = can(regex("^\\d+(\\.\\d+)+", var.talos_version))
     error_message = "Must be a version number."
@@ -31,19 +31,19 @@ variable "cluster_name" {
 variable "cluster_vip" {
   description = "A name to provide for the Talos cluster"
   type        = string
-  default     = "10.17.3.9"
+  default     = "10.0.60.9"
 }
 
 variable "cluster_endpoint" {
   description = "The k8s api-server (VIP) endpoint"
   type        = string
-  default     = "https://10.17.3.9:6443" # k8s api-server endpoint.
+  default     = "https://10.0.60.9:6443" # k8s api-server endpoint.
 }
 
 variable "cluster_node_network" {
   description = "The IP network of the cluster nodes"
   type        = string
-  default     = "10.17.3.0/24"
+  default     = "10.0.60.0/24"
 }
 
 variable "cluster_node_network_first_controller_hostnum" {

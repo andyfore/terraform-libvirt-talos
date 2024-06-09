@@ -30,7 +30,8 @@ terraform {
 }
 
 provider "libvirt" {
-  uri = "qemu:///system"
+  # uri = "qemu:///system"
+  uri = "qemu+ssh://andyfore@10.0.10.175/system?sshauth=privkey&privkey=~/.ssh/id_ed25519"
 }
 
 provider "talos" {
