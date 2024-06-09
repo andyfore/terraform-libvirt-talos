@@ -107,3 +107,9 @@ variable "prefix" {
   type    = string
   default = "terraform_talos_example"
 }
+
+variable "qemu_disk_pool" {
+  description = "the qemu disk pool for virtual drives"
+  type = string
+  default = "vmdisks"
+}
