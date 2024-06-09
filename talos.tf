@@ -93,6 +93,9 @@ data "talos_machine_configuration" "controller" {
             {
               interface = "eth0"
               dhcp      = true
+              vlans = {
+                vlanId = 80
+              }
               vip = {
                 ip = var.cluster_vip
               }
@@ -139,6 +142,22 @@ data "talos_machine_configuration" "worker" {
   docs               = false
   config_patches = [
     yamlencode(local.common_machine_config),
+    yamlencode({
+      machine = {
+        network = {
+          interfaces = [
+            # see https://www.talos.dev/v1.7/talos-guides/network/vip/
+            {
+              interface = "eth0"
+              dhcp      = true
+              vlans = {
+                vlanId = 80
+              }
+            }
+          ]
+        }
+      }
+    }),
   ]
 }
 
