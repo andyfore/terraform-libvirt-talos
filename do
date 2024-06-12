@@ -27,6 +27,9 @@ talos_spin_extension_version="0.14.1"
 # renovate: datasource=github-releases depName=piraeusdatastore/piraeus-operator
 piraeus_operator_version="2.5.1"
 
+# qemu connection uri
+qemu_uri="qemu+ssh://arfore@10.0.10.175/system?sshauth=privkey&privkey=~/.ssh/id_ed25519"
+
 export CHECKPOINT_DISABLE='1'
 export TF_LOG='DEBUG' # TRACE, DEBUG, INFO, WARN or ERROR.
 export TF_LOG_PATH='terraform.log'
@@ -81,11 +84,11 @@ EOF
     - < "tmp/talos/talos-$talos_version.yml"
   qemu-img convert -O qcow2 tmp/talos/nocloud-amd64.raw tmp/talos/$talos_libvirt_base_volume_name
   qemu-img info tmp/talos/$talos_libvirt_base_volume_name
-  if [ -n "$(virsh vol-list default | grep $talos_libvirt_base_volume_name)" ]; then
-    virsh vol-delete --pool default $talos_libvirt_base_volume_name
+  if [ -n "$(virsh -q -c $qemu_uri vol-list default | grep $talos_libvirt_base_volume_name)" ]; then
+    virsh -q -c $qemu_uri vol-delete --pool default $talos_libvirt_base_volume_name
   fi
-  virsh vol-create-as default $talos_libvirt_base_volume_name 10M
-  virsh vol-upload --pool default $talos_libvirt_base_volume_name tmp/talos/$talos_libvirt_base_volume_name
+  virsh -q -c $qemu_uri vol-create-as default $talos_libvirt_base_volume_name 10M
+  virsh -q -c $qemu_uri vol-upload --pool default $talos_libvirt_base_volume_name tmp/talos/$talos_libvirt_base_volume_name
   cat >terraform.tfvars <<EOF
 talos_version                  = "$talos_version"
 talos_libvirt_base_volume_name = "$talos_libvirt_base_volume_name"
@@ -96,6 +99,7 @@ function init {
   step 'build talos image'
   build_talos_image
   step 'terraform init'
+  # terraform init -lockfile=readonly
   terraform init -lockfile=readonly
 }
 
