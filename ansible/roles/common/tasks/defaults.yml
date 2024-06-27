@@ -1,0 +1,10 @@
+---
+- name: Install default packages
+  ansible.builtin.apt:
+    pkg:
+    - zip
+    - build-essential
+    - sudo
+    - smartmontools
+    - parted
+      - htop

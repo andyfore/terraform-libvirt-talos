@@ -12,7 +12,7 @@ terraform {
     # see https://github.com/dmacvicar/terraform-provider-libvirt
     libvirt = {
       source  = "dmacvicar/libvirt"
-      version = ">=0.7.1"
+      version = ">=0.7.6"
     }
     # see https://registry.terraform.io/providers/siderolabs/talos
     # see https://github.com/siderolabs/terraform-provider-talos
@@ -31,6 +31,8 @@ terraform {
 
 provider "libvirt" {
   uri = "qemu+ssh://arfore@10.0.10.175/system?sshauth=privkey&privkey=~/.ssh/id_rsa&known_hosts_verify=ignore&no_verify=1"
+  # uri = "qemu+ssh://root@10.0.10.175/system?sshauth=privkey&privkey=~/.ssh/id_ecdsa&known_hosts_verify=ignore&no_verify=1"
+  # uri = "qemu+ssh://root@10.0.10.175/system?sshauth=privkey&keyfile=~/.ssh/id_rsa&known_hosts_verify=ignore&no_verify=1"
 }
 
 provider "talos" {

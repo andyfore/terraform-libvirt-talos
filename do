@@ -1,9 +1,20 @@
 #!/bin/bash
 set -euo pipefail
 
+while getopts u:h:k:f: flag
+do
+    case "${flag}" in
+        u) username=${OPTARG};;
+        h) remote_host=${OPTARG};;
+        k) priv_key=${OPTARG};;
+        f) action=${OPTARG};;
+    esac
+done
+
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version="1.7.2"
+# talos_version="1.7.2"
+talos_version="1.7.4"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/qemu-guest-agent
 # see https://github.com/siderolabs/extensions/tree/main/guest-agents/qemu-guest-agent
@@ -28,7 +39,10 @@ talos_spin_extension_version="0.14.1"
 piraeus_operator_version="2.5.1"
 
 # qemu connection uri
-qemu_uri="qemu+ssh://arfore@10.0.10.175/system?sshauth=privkey&privkey=~/.ssh/id_ed25519"
+if [[ $action == "init" ]]
+then
+qemu_uri="qemu+ssh://$username@$remote_host/system?sshauth=privkey&privkey=$priv_key"
+fi
 
 export CHECKPOINT_DISABLE='1'
 export TF_LOG='DEBUG' # TRACE, DEBUG, INFO, WARN or ERROR.
@@ -98,6 +112,8 @@ EOF
 function init {
   step 'build talos image'
   build_talos_image
+  step 'fix remote permissions'
+  ssh -tt $username@$remote_host "sudo chmod +r /mnt/vmdisks/*.qcow2"
   step 'terraform init'
   # terraform init -lockfile=readonly
   terraform init -lockfile=readonly
@@ -268,7 +284,7 @@ function destroy {
   terraform destroy -auto-approve
 }
 
-case $1 in
+case $action in
   init)
     init
     ;;

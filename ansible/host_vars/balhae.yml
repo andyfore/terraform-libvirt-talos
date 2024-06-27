@@ -1,0 +1,35 @@
+---
+# netplan configuration
+netplan_renderer: networkd
+netplan_config_file: /etc/netplan/ansible-config.yaml
+netplan_config_file_mode: '0600'
+netplan_enabled: true
+netplan_version: 2
+
+net_interfaces:
+  - index: 0
+    addresses: "10.0.50.175/24"
+    nameservers: ["9.9.9.9", "1.1.1.1"]
+    default_route: "10.0.50.1/24"
+
+net_bridges:
+  - name: "br10"
+    addresses: "10.0.10.175/24"
+    interface: "eno1"
+  - name: "br60"
+    addresses: "10.0.60.175/24"
+    interface: "eno1"
+  - name: "br100"
+    addresses: "10.0.100.175/24"
+    interface: "eno1"
+
+net_vlans:
+  - id: 10
+    name: "vlan10"
+    link: "br10"
+  - id: 60
+    name: "vlan60"
+    link: "br60"
+  - id: 100
+    name: "vlan100"
+    link: "br100"

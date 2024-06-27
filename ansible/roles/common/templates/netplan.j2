@@ -1,0 +1,6 @@
+---
+network:
+  version: {{ netplan_configuration['network']['version']|default('2') }}
+{% if netplan_renderer is not none %}
+  renderer: {{ netplan_renderer }}
+{% endif %}

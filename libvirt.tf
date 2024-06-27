@@ -1,12 +1,14 @@
 # see https://github.com/dmacvicar/terraform-provider-libvirt/blob/v0.7.6/website/docs/r/network.markdown
 resource "libvirt_network" "talos" {
   name      = var.prefix
-  mode      = "nat"
-  domain    = var.cluster_node_domain
-  addresses = [var.cluster_node_network]
-  dhcp {
-    enabled = true
-  }
+  mode      = "bridge"
+  bridge    = "br60"
+  autostart = true
+  # domain    = var.cluster_node_domain
+  # addresses = [var.cluster_node_network]
+  # dhcp {
+    # enabled = true
+  # }
   dns {
     enabled    = true
     local_only = false
@@ -45,7 +47,7 @@ resource "libvirt_domain" "controller" {
   name       = "${var.prefix}_${local.controller_nodes[count.index].name}"
   qemu_agent = false
   machine    = "q35"
-  firmware   = "/usr/share/OVMF/OVMF_CODE.fd"
+  firmware   = "/usr/share/OVMF/OVMF_CODE_4M.fd"
   cpu {
     mode = "host-passthrough"
   }
@@ -78,7 +80,7 @@ resource "libvirt_domain" "worker" {
   name       = "${var.prefix}_${local.worker_nodes[count.index].name}"
   qemu_agent = false
   machine    = "q35"
-  firmware   = "/usr/share/OVMF/OVMF_CODE.fd"
+  firmware   = "/usr/share/OVMF/OVMF_CODE_4M.fd"
   cpu {
     mode = "host-passthrough"
   }

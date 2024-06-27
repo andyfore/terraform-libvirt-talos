@@ -1,0 +1,40 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    pkg:
+    - netplan.io
+    - systemd-resolved
+
+- name: systemd-networkd | Make sure the service is unmasked
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    masked: no
+
+- name: systemd-resolved | Make sure the service is unmasked
+  ansible.builtin.systemd_service:
+    name: systemd-resolved
+    masked: no
+
+- name: systemd-networkd | Make sure the service is enabled
+  ansible.builtin.systemd_service:
+    name: systemd-networkd
+    state: started
+    enabled: yes
+
+- name: systemd-resolved | Make sure the service is enabled
+  ansible.builtin.systemd_service:
+    name: systemd-resolved
+    state: started
+    enabled: yes
+
+- name: networking | Make sure the service is masked
+  ansible.builtin.systemd_service:
+    name: networking
+    masked: yes
+
+- name: define traditional ethernet facts
+  set_fact:
+    ansible_eth: "{% set ansible_eth = ansible_eth|default([]) + [hostvars[inventory_hostname]['ansible_' + item]] %}{{ ansible_eth|list }}"
+    when: hostvars[inventory_hostname]['ansible_' + item]['type'] == 'ether'
+    with_items:
+      - "{{ hostvars[inventory_hostname]['ansible_interfaces'] }}"

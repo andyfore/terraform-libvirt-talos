@@ -73,7 +73,7 @@ variable "cluster_node_network_load_balancer_last_hostnum" {
 variable "cluster_node_domain" {
   description = "the DNS domain of the cluster nodes"
   type        = string
-  default     = "talos.test"
+  default     = "arfore.com"
 }
 
 variable "controller_count" {
@@ -87,7 +87,7 @@ variable "controller_count" {
 
 variable "worker_count" {
   type    = number
-  default = 1
+  default = 3
   validation {
     condition     = var.worker_count >= 1
     error_message = "Must be 1 or more."
@@ -105,7 +105,7 @@ variable "talos_libvirt_base_volume_name" {
 
 variable "prefix" {
   type    = string
-  default = "terraform_talos_example"
+  default = "talos_k8s"
 }
 
 variable "qemu_disk_pool" {
